@@ -3,6 +3,8 @@ import * as vscode from 'vscode';
 import { gitCommitAll, gitCommitFile, gitiniter } from './gitTransactions';
 import * as console from './vsconsole';
 import * as extension from './extension';
+import { Buffer } from 'buffer'
+
 
 // Function for surrounding selected text with a specified string
 function surroundSelectionWith (surround: string) {

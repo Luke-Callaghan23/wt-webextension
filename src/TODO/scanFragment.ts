@@ -4,6 +4,8 @@ import * as extension from '../extension';
 import * as vscode from 'vscode';
 import { FragmentData } from './TODONode';
 import { Validated, TODO, todo } from './TODOsView';
+import { Buffer } from 'buffer'
+
 
 type IncompleteTODO = {
     rowStart: number,

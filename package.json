@@ -1,7 +1,7 @@
 {
-	"name": "wtaniwe",
+	"name": "wtaniwe-web",
 	"displayName": "WTANIWE (web) - Writing Tool, An Integrated Writing Environment (web extension)",
-	"description": "Writing Tool, An Integrated Writing Environment",
+	"description": "Writing Tool, An Integrated Writing Environment (web extension)",
 	"version": "0.0.1",
 	"publisher": "luke-callaghan",
 	"private": false,
@@ -579,6 +579,7 @@
 		"@bendera/vscode-webview-elements": "^0.8.1",
 		"@types/markdown-it": "^12.2.3",
 		"@vscode/codicons": "^0.0.32",
+		"buffer": "^6.0.3",
 		"minimist": "^1.2.6",
 		"uuid": "^9.0.0",
 		"vscode-uri": "^3.0.7"

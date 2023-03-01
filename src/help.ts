@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as extension from './extension';
+import { Buffer } from 'buffer'
 
 export type PromptOptions = {
     placeholder: string,
