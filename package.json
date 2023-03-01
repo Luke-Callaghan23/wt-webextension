@@ -20,7 +20,7 @@
 		"onLanguage:json",
 		"onLanguage:jsonc"
 	],
-	"main": "./out/extension.js",
+	"browser": "./dist/web/extension.js",
 	"contributes": {
 		"viewsWelcome": [
 			{
@@ -70,20 +70,6 @@
 					"name": "Synonyms",
 					"icon": "media/dep.svg",
 					"contextualTitle": "Synonyms",
-					"when": "wt.valid"
-				},
-				{
-					"id": "wt.import.fileExplorer",
-					"name": "Import",
-					"icon": "media/dep.svg",
-					"contextualTitle": "Import",
-					"when": "wt.valid"
-				},
-				{
-					"id": "wt.export",
-					"name": "Export",
-					"icon": "media/dep.svg",
-					"contextualTitle": "Export",
 					"when": "wt.valid"
 				}
 			]
@@ -554,10 +540,14 @@
 		]
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"lint": "eslint \"src/**/*.ts\""
+		"test": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. --extensionTestsPath=dist/web/test/suite/index.js",
+		"pretest": "npm run compile-web",
+		"vscode:prepublish": "npm run package-web",
+		"compile-web": "webpack",
+		"watch-web": "webpack --watch",
+		"package-web": "webpack --mode production --devtool hidden-source-map",
+		"lint": "eslint src --ext ts",
+		"run-in-browser": "vscode-test-web --browserType=chromium --extensionDevelopmentPath=. ."
 	},
 	"devDependencies": {
 		"@types/fs-extra": "^11.0.1",
@@ -566,36 +556,30 @@
 		"@types/html-pdf-node": "^1.0.0",
 		"@types/jsdom": "^21.1.0",
 		"@types/mkdirp": "^0.5.2",
+		"@types/mocha": "^10.0.1",
 		"@types/node": "^16.11.7",
 		"@types/rimraf": "^2.0.2",
 		"@types/showdown": "^2.0.0",
 		"@types/uuid": "^9.0.0",
 		"@types/vscode": "^1.73.0",
+		"@types/webpack-env": "^1.18.0",
 		"@typescript-eslint/eslint-plugin": "^5.42.0",
 		"@typescript-eslint/parser": "^5.42.0",
+		"@vscode/test-web": "^0.0.33",
+		"assert": "^2.0.0",
 		"eslint": "^8.26.0",
-		"typescript": "^4.8.4"
+		"mocha": "^10.1.0",
+		"process": "^0.11.10",
+		"ts-loader": "^9.4.1",
+		"typescript": "^4.8.4",
+		"webpack": "^5.75.0",
+		"webpack-cli": "^5.0.0"
 	},
 	"dependencies": {
 		"@bendera/vscode-webview-elements": "^0.8.1",
 		"@types/markdown-it": "^12.2.3",
 		"@vscode/codicons": "^0.0.32",
-		"child_process": "^1.0.2",
-		"dotenv": "^16.0.3",
-		"fs-extra": "^11.1.0",
-		"ftp": "^0.3.10",
-		"html-docx-js": "^0.3.1",
-		"html-pdf": "^3.0.1",
-		"html-to-docx": "^1.6.5",
-		"jsdom": "^21.1.0",
-		"jsonc-parser": "^0.4.2",
-		"mammoth": "^1.5.1",
-		"markdown-to-document": "^0.27.0",
 		"minimist": "^1.2.6",
-		"mkdirp": "^0.5.1",
-		"pdf2html": "^3.1.0",
-		"rimraf": "^2.6.2",
-		"showdown": "^2.1.0",
 		"uuid": "^9.0.0",
 		"vscode-uri": "^3.0.7"
 	}

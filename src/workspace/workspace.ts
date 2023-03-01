@@ -26,8 +26,6 @@ export class Workspace {
     // Path to all the necessary folders for a workspace to function
     public chaptersFolder: vscode.Uri;
     public workSnipsFolder: vscode.Uri;
-    public importFolder: vscode.Uri;
-    public exportFolder: vscode.Uri;
     public recyclingBin: vscode.Uri;
     public contextValuesFilePath: vscode.Uri;
 
@@ -36,8 +34,6 @@ export class Workspace {
         return [
             this.chaptersFolder, 
             this.workSnipsFolder, 
-            this.importFolder, 
-            this.exportFolder,
             this.recyclingBin,
         ];
     }
@@ -92,8 +88,6 @@ export class Workspace {
         this.dotWtconfigPath = vscode.Uri.joinPath(extension.rootPath, `.wtconfig`);
         this.chaptersFolder = vscode.Uri.joinPath(extension.rootPath, `data/chapters`);
         this.workSnipsFolder = vscode.Uri.joinPath(extension.rootPath, `data/snips`);
-        this.importFolder = vscode.Uri.joinPath(extension.rootPath, `data/import`);
-        this.exportFolder = vscode.Uri.joinPath(extension.rootPath, `data/export`);
         this.recyclingBin = vscode.Uri.joinPath(extension.rootPath, `data/recycling`);
         this.contextValuesFilePath = vscode.Uri.joinPath(extension.rootPath, `data/contextValues.json`);
     }
@@ -207,7 +201,7 @@ export async function loadWorkspace (context: vscode.ExtensionContext): Promise<
         // Try to read the /.wtconfig file
         const wtConfigUri = workspace.dotWtconfigPath;
         const wtconfigJSON = await vscode.workspace.fs.readFile(wtConfigUri);
-        const wtconfig = JSON.parse(wtconfigJSON.toString());
+        const wtconfig = JSON.parse(extension.decoder.decode(wtconfigJSON));
 
         // Read config info
         const config: Config = {
@@ -219,6 +213,7 @@ export async function loadWorkspace (context: vscode.ExtensionContext): Promise<
 
         // Check for the existence of all the necessary folders
         const folderStats: vscode.FileStat[] = await Promise.all(workspace.getFolders().map((folder) => {
+            console.log(folder);
             return vscode.workspace.fs.stat(folder);
         }));
         valid = folderStats.every(({ type }) => type === vscode.FileType.Directory);
@@ -228,8 +223,9 @@ export async function loadWorkspace (context: vscode.ExtensionContext): Promise<
             // Context values file may not exist, so allow a crash to happen
             const contextValuesUri = workspace.contextValuesFilePath;
             const contextValuesBuffer = await vscode.workspace.fs.readFile(contextValuesUri);
-            const contextValuesJSON = contextValuesBuffer.toString();
+            const contextValuesJSON = extension.decoder.decode(contextValuesBuffer);
             const contextValues: { [index: string]: any } = JSON.parse(contextValuesJSON);
+            console.log(contextValues)
             await Promise.all(Object.entries(contextValues).map(([ contextKey, contextValue ]) => {
                 return [
                     vscode.commands.executeCommand('setContext', contextKey, contextValue),
@@ -244,19 +240,12 @@ export async function loadWorkspace (context: vscode.ExtensionContext): Promise<
             // Then make sure to delete the workspace file when finished
             vscode.workspace.fs.delete(contextValuesUri);
         }
-        catch (e) {}
+        catch (e) {
+            console.log(`${e}`)
+        }
     }
     catch (e) {
-        let message: string | undefined = undefined;
-        if (typeof e === 'string') {
-            message = e;
-        }
-        else if (e instanceof Error) {
-            message = e.message;
-        }
-        if (message) {
-            vsconsole.log(message);
-        }
+        console.log(`${e}`)
     }
 
     // Set the value of the context item wt.valid to the result of the validation process 

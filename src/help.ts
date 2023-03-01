@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as extension from './extension';
 
 export type PromptOptions = {
     placeholder: string,
@@ -61,7 +62,8 @@ export function getLatestOrdering (configData: { [index: string]: ConfigFileInfo
 
 export async function readDotConfig (path: vscode.Uri): Promise<{ [index: string]: ConfigFileInfo } | null> {
     try {
-        const dotConfigJSON = (await vscode.workspace.fs.readFile(path)).toString();
+        const dotConfigBuffer = await vscode.workspace.fs.readFile(path);
+        const dotConfigJSON = extension.decoder.decode(dotConfigBuffer);
         const dotConfig: { [index: string]: ConfigFileInfo } = JSON.parse(dotConfigJSON);
         return dotConfig;
     }

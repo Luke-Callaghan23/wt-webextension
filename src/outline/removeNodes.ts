@@ -150,7 +150,8 @@ export async function removeResource (this: OutlineView, resource: OutlineNode |
 
         let recyclingLog: RecycleLog[];
         try {
-            const recyclingLogJSON = (await vscode.workspace.fs.readFile(recyclingLogUri)).toString();
+            const recyclingLogBuffer = await vscode.workspace.fs.readFile(recyclingLogUri);
+            const recyclingLogJSON = extension.decoder.decode(recyclingLogBuffer);
             if (recyclingLogJSON === '') {
                 recyclingLog = [];
             }

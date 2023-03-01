@@ -2,14 +2,11 @@
 
 import * as vscode from 'vscode';
 import * as console from './vsconsole';
-import { ImportFileSystemView } from './import/importFileSystemView';
 import { OutlineView } from './outline/outlineView';
 import { TODOsView } from './TODO/TODOsView';
 import { WordWatcher } from './wordWatcher/wordWatcher';
-import { ExportForm } from './export/exportFormView';
 import { SynonymViewProvider } from './synonyms/synonymsView';
 import { Toolbar } from './toolbar';
-import { importWorkspace } from './workspace/importExport/importWorkspace';
 
 import { loadWorkspace, createWorkspace, Workspace } from './workspace/workspace';
 import { FileAccessManager } from './fileAccesses';
@@ -31,7 +28,6 @@ async function loadExtensionWorkspace (context: vscode.ExtensionContext, workspa
 	try {
 		const outline = new OutlineView(context, workspace);				// wt.outline
 		await outline.init();
-		const importFS = new ImportFileSystemView(context, workspace);		// wt.import.fileSystem
 		const synonyms = new SynonymViewProvider(context, workspace);		// wt.synonyms
 		const todo = new TODOsView(context, workspace);						// wt.todo
 		await todo.init();
@@ -46,9 +42,6 @@ async function loadExtensionWorkspace (context: vscode.ExtensionContext, workspa
 
 		// Register commands for the toolbar (toolbar that appears when editing a .wt file)
 		Toolbar.registerCommands();
-	
-		// Register commands for the export webview form
-		ExportForm.registerCommands(context.extensionUri, context, workspace, outline);
 	
 		// Initialize the file access manager
 		// Manages any accesses of .wt fragments, for various uses such as drag/drop in outline view or creating new
@@ -84,6 +77,8 @@ async function activateImpl (context: vscode.ExtensionContext) {
 	rootPath = (vscode.workspace.workspaceFolders && (vscode.workspace.workspaceFolders.length > 0))
 		? vscode.workspace.workspaceFolders[0].uri : vscode.Uri.parse('.');
 
+		console.log
+
 	
 	// rootPath = rootPath.replaceAll('\\', '/');
 	// rootPath = rootPath.replaceAll('c:/', 'C:\\');
@@ -105,23 +100,6 @@ async function activateImpl (context: vscode.ExtensionContext) {
 		// If the attempt to load the workspace failed, then register commands both for loading 
 		//		a workspace from a .iwe environment file or for creating a new iwe environment
 		//		at the current location
-		vscode.commands.registerCommand('wt.importWorkspace', () => {
-			importWorkspace(context).then((ws) => {
-				if (ws) {
-					loadExtensionWorkspace(context, ws);
-					return;
-				}
-				// Inform the user of the failed import 
-				vscode.window.showInformationMessage(`Could not import .iwe workspace`, {
-					modal: true,
-					detail: 'Make sure the .iwe file you provided is the exact same as the one created by this extension.'
-				}, 'Okay');
-			})
-			.catch(err => {
-				handleLoadFailure(err);
-				throw err;
-			});
-		});
 		vscode.commands.registerCommand('wt.createWorkspace', () => {
 			createWorkspace(context).then((ws) => {
 				loadExtensionWorkspace(context, ws);
